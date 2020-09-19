@@ -1,0 +1,62 @@
+version: "3.8"
+networks:
+  spark-network:
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+services:
+  spark-master:
+    container_name: host
+    image: spark-master:latest
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+    volumes:
+      - ./data:/Data
+    environment:
+      - "SPARK_LOCAL_IP=spark-master"
+    networks:
+      spark-network:
+        ipv4_address: 10.5.0.2
+  spark-worker-1:
+      container_name: worker1
+      image: spark-worker:latest
+      depends_on:
+        - spark-master
+      environment:
+        - SPARK_MASTER=spark://spark-master:7077
+        - SPARK_WORKER_CORES=1
+        - SPARK_WORKER_MEMORY=1G
+      volumes:
+        - ./data:/Data
+      networks:
+        spark-network:
+          ipv4_address: 10.5.0.3
+  spark-worker-2:
+      container_name: worker2
+      image: spark-worker:latest
+      depends_on:
+        - spark-master
+      environment:
+        - SPARK_MASTER=spark://spark-master:7077
+        - SPARK_WORKER_CORES=1
+        - SPARK_WORKER_MEMORY=1G
+      volumes:
+        - ./data:/Data
+      networks:
+        spark-network:
+          ipv4_address: 10.5.0.4
+  spark-worker-3:
+      container_name: worker3
+      image: spark-worker:latest
+      depends_on:
+        - spark-master
+      environment:
+        - SPARK_MASTER=spark://spark-master:7077
+        - SPARK_WORKER_CORES=1
+        - SPARK_WORKER_MEMORY=1G
+      volumes:
+        - ./data:/Data
+      networks:
+        spark-network:
+          ipv4_address: 10.5.0.5
